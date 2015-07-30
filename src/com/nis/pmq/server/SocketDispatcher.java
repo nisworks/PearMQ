@@ -1,4 +1,4 @@
-package com.nis.mom.server;
+package com.nis.pmq.server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -11,29 +11,29 @@ import java.util.Map;
 
 import org.json.simple.parser.ParseException;
 
-import com.nis.mom.common.ErrorCode;
-import com.nis.mom.common.JsonUtil;
-import com.nis.mom.common.MomParams;
-import com.nis.mom.common.exception.MomRuntimeException;
-import com.nis.mom.common.exception.MomSocketException;
+import com.nis.pmq.common.ErrorCode;
+import com.nis.pmq.common.JsonUtil;
+import com.nis.pmq.common.PmqParams;
+import com.nis.pmq.common.exception.PmqRuntimeException;
+import com.nis.pmq.common.exception.PmqSocketException;
 
 public class SocketDispatcher {
 
 	private int socketOffset;
 	private SocketServer[] socketPool;
 	private HashMap<String, SocketServer> activeClients;
-	private MomProcesorFactory procesorFactory;
+	private PmqProcesorFactory procesorFactory;
 
 	public SocketDispatcher(int baseSocket, int socketPoolSize,
-			MomProcesorFactory procesorFactory) {
+			PmqProcesorFactory procesorFactory) {
 		this.socketOffset = baseSocket;
 		this.socketPool = new SocketServer[socketPoolSize + 1];
 		this.procesorFactory = procesorFactory;
 	}
 	
 	public SocketDispatcher( int socketPoolSize,
-			MomProcesorFactory procesorFactory) {
-		this(MomParams.DEFAULT_PORT, socketPoolSize, procesorFactory);
+			PmqProcesorFactory procesorFactory) {
+		this(PmqParams.DEFAULT_PORT, socketPoolSize, procesorFactory);
 	}
 
 	public void initiateDispatcher() {
@@ -51,20 +51,20 @@ public class SocketDispatcher {
 								.getInputStream());
 						output = new DataOutputStream(dispatcherSocket
 								.getOutputStream());
-						Map<MomParams, Object> request = JsonUtil.decodeMap(input.readUTF());
-						System.out.println("server initate dispatcher: " + request.get(MomParams.SERVICE));
+						Map<PmqParams, Object> request = JsonUtil.decodeMap(input.readUTF());
+						System.out.println("server initate dispatcher: " + request.get(PmqParams.SERVICE));
 						
-						Map<MomParams, Object> params = new HashMap<MomParams, Object>();
+						Map<PmqParams, Object> params = new HashMap<PmqParams, Object>();
 						
-						if(procesorFactory==null||procesorFactory.getServiceList()==null||!procesorFactory.getServiceList().contains(request.get(MomParams.SERVICE))){
-							System.out.println("unknown service: " + request.get(MomParams.SERVICE));
-							params.put(MomParams.ERROR_CODE, ErrorCode.UNKNOWN_SERVICE.toString());
+						if(procesorFactory==null||procesorFactory.getServiceList()==null||!procesorFactory.getServiceList().contains(request.get(PmqParams.SERVICE))){
+							System.out.println("unknown service: " + request.get(PmqParams.SERVICE));
+							params.put(PmqParams.ERROR_CODE, ErrorCode.UNKNOWN_SERVICE.toString());
 							
 						} else {
 							SocketServer server = openSocket();
-							params.put(MomParams.SERVICE, request.get(MomParams.SERVICE));
-							params.put(MomParams.PORT, server.getPortNumber());
-							params.put(MomParams.SERVICE_LIST, procesorFactory.getServiceList());							
+							params.put(PmqParams.SERVICE, request.get(PmqParams.SERVICE));
+							params.put(PmqParams.PORT, server.getPortNumber());
+							params.put(PmqParams.SERVICE_LIST, procesorFactory.getServiceList());							
 						}
 
 						output.writeUTF(JsonUtil.encodeMap(params));
@@ -99,18 +99,18 @@ public class SocketDispatcher {
 				return server;
 			}
 		}
-		throw new MomRuntimeException("Socket pool exausted");
+		throw new PmqRuntimeException("Socket pool exausted");
 	}
 
-	protected synchronized void processRequest(final MomRequest request,
+	protected synchronized void processRequest(final PmqRequest request,
 			final SocketServer socket) {
 		Runnable requestThread = new Runnable() {
 			public void run() {
-				MomProcesor processor = procesorFactory.initate(request.getService());
+				PmqProcesor processor = procesorFactory.initate(request.getService());
 				request.setResponse(processor.processRequest(request.getRequest(),request));
 				try {
 					socket.writeResponse(request);
-				} catch (MomSocketException e) {
+				} catch (PmqSocketException e) {
 					disposeResponse(request);
 					socketPool[socket.getPortNumber() - socketOffset] = null;
 					e.printStackTrace();
@@ -121,7 +121,7 @@ public class SocketDispatcher {
 		new Thread(requestThread).start();
 	}
 
-	private void disposeResponse(MomRequest request) {
+	private void disposeResponse(PmqRequest request) {
 
 	}
 }

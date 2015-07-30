@@ -1,6 +1,6 @@
-package com.nis.mom.server;
+package com.nis.pmq.server;
 
-public class MomRequest {
+public class PmqRequest {
 
 	private String request;
 	private String clientId;
@@ -8,7 +8,7 @@ public class MomRequest {
 	private String service;
 	private String response;
 
-	public MomRequest(String request, String clientId, String service, String uuid) {
+	public PmqRequest(String request, String clientId, String service, String uuid) {
 		super();
 		this.request = request;
 		this.clientId = clientId;

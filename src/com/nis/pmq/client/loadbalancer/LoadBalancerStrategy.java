@@ -1,8 +1,8 @@
-package com.nis.mom.client.loadbalancer;
+package com.nis.pmq.client.loadbalancer;
 
 import java.util.Map;
 
-import com.nis.mom.client.SocketClient;
+import com.nis.pmq.client.SocketClient;
 
 public interface LoadBalancerStrategy {
 

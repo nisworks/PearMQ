@@ -1,6 +1,6 @@
-package com.nis.mom.common;
+package com.nis.pmq.common;
 
-public class MomEnvelope {
+public class PmqEnvelope {
 
 	
 	

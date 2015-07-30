@@ -1,4 +1,4 @@
-package com.nis.mom.common;
+package com.nis.pmq.common;
 
 public enum ErrorCode {
 	UNKNOWN_SERVICE

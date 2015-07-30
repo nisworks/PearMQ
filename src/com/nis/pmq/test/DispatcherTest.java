@@ -1,14 +1,14 @@
-package com.nis.mom.test;
+package com.nis.pmq.test;
 
 import java.util.UUID;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.nis.mom.client.ServiceDispatcher;
-import com.nis.mom.common.exception.MomServiceException;
-import com.nis.mom.common.exception.MomSocketException;
-import com.nis.mom.server.SocketDispatcher;
+import com.nis.pmq.client.ServiceDispatcher;
+import com.nis.pmq.common.exception.PmqServiceException;
+import com.nis.pmq.common.exception.PmqSocketException;
+import com.nis.pmq.server.SocketDispatcher;
 
 public class DispatcherTest {
 
@@ -18,7 +18,7 @@ public class DispatcherTest {
 		dispatcher.initiateDispatcher();
 	}
 	
-	public void test() throws MomSocketException {
+	public void test() throws PmqSocketException {
 		
 		System.out.println(UUID.randomUUID().toString());
 		System.out.println(UUID.randomUUID().toString());
@@ -44,7 +44,7 @@ public class DispatcherTest {
 	}
 	
 	@Test
-	public void test2() throws MomSocketException, MomServiceException{
+	public void test2() throws PmqSocketException, PmqServiceException{
 
 		
 		final ServiceDispatcher serviceDispatcher = new ServiceDispatcher();		

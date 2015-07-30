@@ -1,9 +1,9 @@
-package com.nis.mom.client.loadbalancer;
+package com.nis.pmq.client.loadbalancer;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import com.nis.mom.client.SocketClient;
+import com.nis.pmq.client.SocketClient;
 
 public class ServiceStatsData {
 	private Set<SocketClient> socketSet = new HashSet();

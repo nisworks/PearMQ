@@ -1,13 +1,13 @@
-package com.nis.mom.client;
+package com.nis.pmq.client;
 
-public class MomRequest2 {
+public class PmqRequest2 {
 
 	private String request;
 	private String uuid;
 	private String service;
 	private String response;
 	
-	public MomRequest2(String uuid, String service, String request) {
+	public PmqRequest2(String uuid, String service, String request) {
 		super();
 		this.uuid = uuid;
 		this.service = service;

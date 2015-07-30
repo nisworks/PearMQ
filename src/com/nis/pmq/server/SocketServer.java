@@ -1,4 +1,4 @@
-package com.nis.mom.server;
+package com.nis.pmq.server;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -9,10 +9,10 @@ import java.util.Date;
 
 import org.json.simple.parser.ParseException;
 
-import com.nis.mom.common.JsonUtil;
-import com.nis.mom.common.MomEnvelope;
-import com.nis.mom.common.exception.MomRuntimeException;
-import com.nis.mom.common.exception.MomSocketException;
+import com.nis.pmq.common.JsonUtil;
+import com.nis.pmq.common.PmqEnvelope;
+import com.nis.pmq.common.exception.PmqRuntimeException;
+import com.nis.pmq.common.exception.PmqSocketException;
 
 public class SocketServer {
 
@@ -56,10 +56,10 @@ public class SocketServer {
 
 					while ((requestString = input.readUTF()) != null) {
 						System.out.println("Server read: " + requestString);
-						MomEnvelope envelope;
+						PmqEnvelope envelope;
 						try {
 							envelope = JsonUtil.decode(requestString);
-							MomRequest request = new MomRequest(
+							PmqRequest request = new PmqRequest(
 									envelope.getPayload(), clientId,
 									envelope.getService(), envelope.getUuid());
 							socketDispatcher.processRequest(request, SocketServer.this);
@@ -76,14 +76,14 @@ public class SocketServer {
 		}).start();
 	}
 
-	public synchronized void writeResponse(MomRequest request)
-			throws MomSocketException {
+	public synchronized void writeResponse(PmqRequest request)
+			throws PmqSocketException {
 		if (isClosed()) {
-			throw new MomSocketException("Socket is closed");
+			throw new PmqSocketException("Socket is closed");
 		}
 		if (!isClosed() && clientId.equals(request.getClientId())) {
 			try {
-				MomEnvelope envelope = new MomEnvelope();
+				PmqEnvelope envelope = new PmqEnvelope();
 				envelope.setPayload(request.getResponse());
 				envelope.setTimestamp(new Date().toString());
 				envelope.setService(request.getService());
@@ -91,10 +91,10 @@ public class SocketServer {
 				output.writeUTF(JsonUtil.encode(envelope));
 				return;
 			} catch (IOException e) {
-				throw new MomSocketException(e);
+				throw new PmqSocketException(e);
 			}
 		}
-		throw new MomSocketException("Illegal clientId");
+		throw new PmqSocketException("Illegal clientId");
 	}
 
 	public boolean isClosed() {

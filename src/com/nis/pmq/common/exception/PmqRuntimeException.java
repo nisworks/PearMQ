@@ -1,29 +1,29 @@
-package com.nis.mom.common.exception;
+package com.nis.pmq.common.exception;
 
-public class MomServiceException extends MomException {
+public class PmqRuntimeException extends RuntimeException {
 
-	public MomServiceException() {
+	public PmqRuntimeException() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 
-	public MomServiceException(String s, Throwable throwable, boolean flag,
+	public PmqRuntimeException(String s, Throwable throwable, boolean flag,
 			boolean flag1) {
 		super(s, throwable, flag, flag1);
 		// TODO Auto-generated constructor stub
 	}
 
-	public MomServiceException(String s, Throwable throwable) {
+	public PmqRuntimeException(String s, Throwable throwable) {
 		super(s, throwable);
 		// TODO Auto-generated constructor stub
 	}
 
-	public MomServiceException(String s) {
+	public PmqRuntimeException(String s) {
 		super(s);
 		// TODO Auto-generated constructor stub
 	}
 
-	public MomServiceException(Throwable throwable) {
+	public PmqRuntimeException(Throwable throwable) {
 		super(throwable);
 		// TODO Auto-generated constructor stub
 	}

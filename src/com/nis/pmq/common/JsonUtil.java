@@ -1,4 +1,4 @@
-package com.nis.mom.common;
+package com.nis.pmq.common;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +11,7 @@ public class JsonUtil {
 
 	static private JSONParser parser = new JSONParser();
 
-	public static String encode(MomEnvelope payload) {
+	public static String encode(PmqEnvelope payload) {
 		JSONObject env = new JSONObject();
 		env.put("payload", payload.getPayload());
 		env.put("service", payload.getService());
@@ -23,14 +23,14 @@ public class JsonUtil {
 		return env.toJSONString();
 	}
 
-	public static String encodeMap(Map<MomParams, Object> payload) {
+	public static String encodeMap(Map<PmqParams, Object> payload) {
 		JSONObject env = new JSONObject();
 		env.putAll(payload);
 		return env.toJSONString();
 	}
 
-	public static MomEnvelope decode(String payload) throws ParseException {
-		MomEnvelope result = new MomEnvelope();
+	public static PmqEnvelope decode(String payload) throws ParseException {
+		PmqEnvelope result = new PmqEnvelope();
 		JSONObject json = (JSONObject) parser.parse(payload);
 
 		result.setErrorCode((String) json.get("errorCode"));
@@ -43,15 +43,15 @@ public class JsonUtil {
 		return result;
 	}
 
-	public static Map<MomParams, Object> decodeMap(String payload)
+	public static Map<PmqParams, Object> decodeMap(String payload)
 			throws ParseException {
-		MomEnvelope result = new MomEnvelope();
+		PmqEnvelope result = new PmqEnvelope();
 		JSONObject json = (JSONObject) parser.parse(payload);
 
-		Map<MomParams, Object> resultMap = new HashMap<MomParams, Object>();
+		Map<PmqParams, Object> resultMap = new HashMap<PmqParams, Object>();
 		for (Object s : json.keySet()) {
-			if (MomParams.valueOf(s.toString()) != null) {
-				resultMap.put(MomParams.valueOf(s.toString()), json.get(s));
+			if (PmqParams.valueOf(s.toString()) != null) {
+				resultMap.put(PmqParams.valueOf(s.toString()), json.get(s));
 			}
 		}
 		return resultMap;

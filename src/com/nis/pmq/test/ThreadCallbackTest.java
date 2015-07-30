@@ -1,4 +1,4 @@
-package com.nis.mom.test;
+package com.nis.pmq.test;
 
 import org.junit.Test;
 

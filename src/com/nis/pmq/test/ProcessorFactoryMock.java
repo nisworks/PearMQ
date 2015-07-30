@@ -1,16 +1,16 @@
-package com.nis.mom.test;
+package com.nis.pmq.test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import com.nis.mom.server.MomProcesor;
-import com.nis.mom.server.MomProcesorFactory;
-import com.nis.mom.server.MomRequest;
+import com.nis.pmq.server.PmqProcesor;
+import com.nis.pmq.server.PmqProcesorFactory;
+import com.nis.pmq.server.PmqRequest;
 
-public class ProcessorFactoryMock implements MomProcesorFactory {
+public class ProcessorFactoryMock implements PmqProcesorFactory {
 
 	@Override
-	public MomProcesor initate(String service) {
+	public PmqProcesor initate(String service) {
 		// TODO Auto-generated method stub
 		return new MomProcesorMock();
 	}
@@ -24,10 +24,10 @@ public class ProcessorFactoryMock implements MomProcesorFactory {
 		return result;
 	}
 	
-	public class MomProcesorMock implements MomProcesor{
+	public class MomProcesorMock implements PmqProcesor{
 
 		@Override
-		public String processRequest(String payload, MomRequest request) {
+		public String processRequest(String payload, PmqRequest request) {
 			// TODO Auto-generated method stub
 			return payload+" pong";
 		}

@@ -1,15 +1,15 @@
-package com.nis.mom.client;
+package com.nis.pmq.client;
 
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.nis.mom.client.loadbalancer.ServiceStatsData;
-import com.nis.mom.common.MomEnvelope;
-import com.nis.mom.common.MomParams;
-import com.nis.mom.common.exception.MomServiceException;
-import com.nis.mom.common.exception.MomSocketException;
+import com.nis.pmq.client.loadbalancer.ServiceStatsData;
+import com.nis.pmq.common.PmqEnvelope;
+import com.nis.pmq.common.PmqParams;
+import com.nis.pmq.common.exception.PmqServiceException;
+import com.nis.pmq.common.exception.PmqSocketException;
 
 public class ServiceDispatcher {
 	
@@ -17,27 +17,27 @@ public class ServiceDispatcher {
 	private Map<String, RequestThread> requestCallbacks = new ConcurrentHashMap<String, RequestThread>();
 
 	
-	public MomRequest2 callService(String service, String request, long timeout) throws MomServiceException{
+	public PmqRequest2 callService(String service, String request, long timeout) throws PmqServiceException{
 		ServiceStatsData connectorStrategy = services.get(service);
 		SocketClient serverConnector = connectorStrategy.getSocket();
 		String uuid = UUID.randomUUID().toString();
-		MomRequest2 momRequest = new MomRequest2(uuid, service, request);
+		PmqRequest2 momRequest = new PmqRequest2(uuid, service, request);
 		final Thread currentThread = Thread.currentThread();
 		requestCallbacks.put(uuid, new RequestThread(currentThread, momRequest));
 		try {
 			serverConnector.callService(momRequest, timeout);
-		} catch (MomSocketException e1) {
-			throw new MomServiceException(e1);
+		} catch (PmqSocketException e1) {
+			throw new PmqServiceException(e1);
 		}
 		try {
 			currentThread.sleep(timeout);
 		} catch (InterruptedException e) {
 			return momRequest;
 		}
-		throw new MomServiceException("Service timeout: "+service);
+		throw new PmqServiceException("Service timeout: "+service);
 	}
 	
-	protected void processResponse(MomEnvelope envelope){
+	protected void processResponse(PmqEnvelope envelope){
 		System.out.println("client: "+envelope.getUuid());
 		RequestThread requestThread = requestCallbacks.get(envelope.getUuid());
 		//System.out.println(requestThread);
@@ -45,13 +45,13 @@ public class ServiceDispatcher {
 		requestThread.getThread().interrupt();
 	}
 	
-	public void connectService(String service, String hostname, int port) throws MomSocketException{
+	public void connectService(String service, String hostname, int port) throws PmqSocketException{
 		SocketClient client = new SocketClient(hostname, port,  this);
 		client.openSocket(service);
 	}
 	
-	public void connectService(String service, String hostname) throws MomSocketException{
-		connectService(service, hostname, MomParams.DEFAULT_PORT);
+	public void connectService(String service, String hostname) throws PmqSocketException{
+		connectService(service, hostname, PmqParams.DEFAULT_PORT);
 	}
 	
 	protected synchronized void registerService(SocketClient socket, List<String> serviceList){
@@ -69,11 +69,11 @@ public class ServiceDispatcher {
 	private class RequestThread{
 		
 		private Thread thread;
-		private MomRequest2 request;
+		private PmqRequest2 request;
 		
 		
 		
-		public RequestThread(Thread thread, MomRequest2 request) {
+		public RequestThread(Thread thread, PmqRequest2 request) {
 			super();
 			this.thread = thread;
 			this.request = request;
@@ -81,7 +81,7 @@ public class ServiceDispatcher {
 		public Thread getThread() {
 			return thread;
 		}
-		public MomRequest2 getRequest() {
+		public PmqRequest2 getRequest() {
 			return request;
 		}
 		

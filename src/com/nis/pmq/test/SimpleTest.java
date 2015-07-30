@@ -1,15 +1,15 @@
-package com.nis.mom.test;
+package com.nis.pmq.test;
 
 import org.junit.Test;
 
-import com.nis.mom.client.SocketClient;
-import com.nis.mom.common.exception.MomSocketException;
-import com.nis.mom.server.SocketServer;
+import com.nis.pmq.client.SocketClient;
+import com.nis.pmq.common.exception.PmqSocketException;
+import com.nis.pmq.server.SocketServer;
 
 public class SimpleTest {
 
 	@Test
-	public void test() throws MomSocketException {
+	public void test() throws PmqSocketException {
 		System.out.println("init server");
 		new Thread(new Runnable() {
 			public void run() {

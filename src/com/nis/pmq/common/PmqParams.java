@@ -1,6 +1,6 @@
-package com.nis.mom.common;
+package com.nis.pmq.common;
 
-public enum MomParams {
+public enum PmqParams {
 
 	
 	

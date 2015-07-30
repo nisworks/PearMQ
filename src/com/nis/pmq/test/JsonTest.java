@@ -1,4 +1,4 @@
-package com.nis.mom.test;
+package com.nis.pmq.test;
 
 import java.util.Date;
 
@@ -8,8 +8,8 @@ import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.junit.Test;
 
-import com.nis.mom.common.JsonUtil;
-import com.nis.mom.common.MomEnvelope;
+import com.nis.pmq.common.JsonUtil;
+import com.nis.pmq.common.PmqEnvelope;
 
 public class JsonTest {
 	
@@ -51,7 +51,7 @@ public class JsonTest {
 		  obj.put("nickname",null);
 		  String payload = obj.toJSONString();
 		  
-		  MomEnvelope envelope = new MomEnvelope();
+		  PmqEnvelope envelope = new PmqEnvelope();
 		  envelope.setPayload(payload);
 		  envelope.setTimestamp(new Date().toString());
 		  envelope.setService("jakas_usluga");
@@ -60,7 +60,7 @@ public class JsonTest {
 		  
 		  System.out.println(json);
 		  
-		  MomEnvelope result = JsonUtil.decode(json);
+		  PmqEnvelope result = JsonUtil.decode(json);
 		  System.out.println(result.getErrorCode());
 		  System.out.println(result.getTimestamp());
 		  System.out.println(result.getService());

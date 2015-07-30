@@ -1,4 +1,4 @@
-package com.nis.mom.client;
+package com.nis.pmq.client;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -14,12 +14,12 @@ import java.util.UUID;
 
 import org.json.simple.parser.ParseException;
 
-import com.nis.mom.common.JsonUtil;
-import com.nis.mom.common.MomEnvelope;
-import com.nis.mom.common.MomParams;
-import com.nis.mom.common.exception.MomSocketException;
-import com.nis.mom.server.MomRequest;
-import com.nis.mom.server.SocketServer;
+import com.nis.pmq.common.JsonUtil;
+import com.nis.pmq.common.PmqEnvelope;
+import com.nis.pmq.common.PmqParams;
+import com.nis.pmq.common.exception.PmqSocketException;
+import com.nis.pmq.server.PmqRequest;
+import com.nis.pmq.server.SocketServer;
 
 public class SocketClient {
 
@@ -37,34 +37,34 @@ public class SocketClient {
 		this.serviceDispatcher = serviceDispatcher;
 	}
 
-	public void openSocket(String service) throws MomSocketException {
+	public void openSocket(String service) throws PmqSocketException {
 
 		Socket clientSocket;
 
 		DataInputStream inputConnector;
 		DataOutputStream outputConnector;
 		try {
-			Map<MomParams, Object> params = negotiateConnection(service);
+			Map<PmqParams, Object> params = negotiateConnection(service);
 
-			if (params.get(MomParams.ERROR_CODE) != null) {
-				throw new MomSocketException(
-						(String) params.get(MomParams.ERROR_CODE));
+			if (params.get(PmqParams.ERROR_CODE) != null) {
+				throw new PmqSocketException(
+						(String) params.get(PmqParams.ERROR_CODE));
 			} else {
 				openReceiverSocket(params);
 			}
 
 		} catch (UnknownHostException e) {
-			throw new MomSocketException(e);
+			throw new PmqSocketException(e);
 		} catch (IOException e) {
-			throw new MomSocketException(e);
+			throw new PmqSocketException(e);
 		} catch (ParseException e) {
-			throw new MomSocketException(e);
+			throw new PmqSocketException(e);
 		}
 
 	}
 
-	public synchronized void callService(MomRequest2 request, long timeout) throws MomSocketException {
-		MomEnvelope envelope = new MomEnvelope();
+	public synchronized void callService(PmqRequest2 request, long timeout) throws PmqSocketException {
+		PmqEnvelope envelope = new PmqEnvelope();
 		envelope.setService(request.getService());
 		envelope.setPayload(request.getRequest());
 		envelope.setTimestamp(new Date().toString());
@@ -74,11 +74,11 @@ public class SocketClient {
 			System.out.println("client: "+JsonUtil.encode(envelope));
 			output.writeUTF(JsonUtil.encode(envelope));
 		} catch (IOException e) {
-			throw new MomSocketException(e);
+			throw new PmqSocketException(e);
 		}
 	}
 
-	private Map<MomParams, Object> negotiateConnection(String service)
+	private Map<PmqParams, Object> negotiateConnection(String service)
 			throws UnknownHostException, IOException, ParseException {
 		Socket clientSocket;
 		DataInputStream inputConnector;
@@ -87,8 +87,8 @@ public class SocketClient {
 		inputConnector = new DataInputStream(clientSocket.getInputStream());
 		outputConnector = new DataOutputStream(clientSocket.getOutputStream());
 
-		Map<MomParams, Object> params = new HashMap<MomParams, Object>();
-		params.put(MomParams.SERVICE, service);
+		Map<PmqParams, Object> params = new HashMap<PmqParams, Object>();
+		params.put(PmqParams.SERVICE, service);
 		outputConnector.writeUTF(JsonUtil.encodeMap(params));
 
 		String responseLine = inputConnector.readUTF();
@@ -99,16 +99,16 @@ public class SocketClient {
 		return params;
 	}
 
-	private void openReceiverSocket(Map<MomParams, Object> params)
+	private void openReceiverSocket(Map<PmqParams, Object> params)
 			throws UnknownHostException, IOException {
 		Socket clientSocket;
 		clientSocket = new Socket(hostName,
-				(int) (long) params.get(MomParams.PORT));
+				(int) (long) params.get(PmqParams.PORT));
 		input = new DataInputStream(clientSocket.getInputStream());
 		output = new DataOutputStream(clientSocket.getOutputStream());
 
 		serviceDispatcher.registerService(this,
-				(List<String>) params.get(MomParams.SERVICE_LIST));
+				(List<String>) params.get(PmqParams.SERVICE_LIST));
 
 		new Thread(new Runnable() {
 			public void run() {
@@ -116,7 +116,7 @@ public class SocketClient {
 				try {
 					while ((requestString = input.readUTF()) != null) {
 						System.out.println("client receiver socket: " + requestString);
-						MomEnvelope envelope;
+						PmqEnvelope envelope;
 
 						envelope = JsonUtil.decode(requestString);
 						serviceDispatcher.processResponse(envelope);
