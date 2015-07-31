@@ -5,6 +5,6 @@ import java.io.OutputStream;
 
 public interface PmqProcesor {
 	
-	public String processRequest(String payload, PmqRequest request);
+	public String processRequest(String payload, ServiceRequest request);
 
 }

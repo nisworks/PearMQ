@@ -1,6 +1,6 @@
 package com.nis.pmq.server;
 
-public class PmqRequest {
+public class ServiceRequest {
 
 	private String request;
 	private String clientId;
@@ -8,7 +8,7 @@ public class PmqRequest {
 	private String service;
 	private String response;
 
-	public PmqRequest(String request, String clientId, String service, String uuid) {
+	public ServiceRequest(String request, String clientId, String service, String uuid) {
 		super();
 		this.request = request;
 		this.clientId = clientId;

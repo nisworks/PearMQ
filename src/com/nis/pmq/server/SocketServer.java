@@ -59,13 +59,12 @@ public class SocketServer {
 						PmqEnvelope envelope;
 						try {
 							envelope = JsonUtil.decode(requestString);
-							PmqRequest request = new PmqRequest(
+							ServiceRequest request = new ServiceRequest(
 									envelope.getPayload(), clientId,
 									envelope.getService(), envelope.getUuid());
 							socketDispatcher.processRequest(request, SocketServer.this);
 						} catch (ParseException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
+							throw new PmqRuntimeException(e);
 						}
 					}
 
@@ -76,7 +75,7 @@ public class SocketServer {
 		}).start();
 	}
 
-	public synchronized void writeResponse(PmqRequest request)
+	public synchronized void writeResponse(ServiceRequest request)
 			throws PmqSocketException {
 		if (isClosed()) {
 			throw new PmqSocketException("Socket is closed");

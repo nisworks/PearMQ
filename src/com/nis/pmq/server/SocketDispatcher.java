@@ -74,14 +74,11 @@ public class SocketDispatcher {
 					}
 
 				} catch (UnknownHostException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new PmqRuntimeException(e);
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new PmqRuntimeException(e);
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new PmqRuntimeException(e);
 				}
 			}
 		}).start();
@@ -102,7 +99,7 @@ public class SocketDispatcher {
 		throw new PmqRuntimeException("Socket pool exausted");
 	}
 
-	protected synchronized void processRequest(final PmqRequest request,
+	protected synchronized void processRequest(final ServiceRequest request,
 			final SocketServer socket) {
 		Runnable requestThread = new Runnable() {
 			public void run() {
@@ -121,7 +118,7 @@ public class SocketDispatcher {
 		new Thread(requestThread).start();
 	}
 
-	private void disposeResponse(PmqRequest request) {
+	private void disposeResponse(ServiceRequest request) {
 
 	}
 }

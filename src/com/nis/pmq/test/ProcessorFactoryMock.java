@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.nis.pmq.server.PmqProcesor;
 import com.nis.pmq.server.PmqProcesorFactory;
-import com.nis.pmq.server.PmqRequest;
+import com.nis.pmq.server.ServiceRequest;
 
 public class ProcessorFactoryMock implements PmqProcesorFactory {
 
@@ -27,7 +27,7 @@ public class ProcessorFactoryMock implements PmqProcesorFactory {
 	public class MomProcesorMock implements PmqProcesor{
 
 		@Override
-		public String processRequest(String payload, PmqRequest request) {
+		public String processRequest(String payload, ServiceRequest request) {
 			// TODO Auto-generated method stub
 			return payload+" pong";
 		}

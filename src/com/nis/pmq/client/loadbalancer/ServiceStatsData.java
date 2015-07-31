@@ -6,7 +6,7 @@ import java.util.Set;
 import com.nis.pmq.client.SocketClient;
 
 public class ServiceStatsData {
-	private Set<SocketClient> socketSet = new HashSet();
+
 	private String service;
 	private LoadBalancerStrategy strategy;
 	
@@ -20,18 +20,11 @@ public class ServiceStatsData {
 
 
 
-	public synchronized void registerSocket(SocketClient socket) {
-		if (!socketSet.contains(socket)) {
-			socketSet.add(socket);
-			System.out.println("add socket for service: "+service);
-		}
+	public void registerSocket(SocketClient socket) {
+		strategy.registerSocket(socket);
+		System.out.println("add socket for service: "+service);
 	}
 
-
-
-	public Set<SocketClient> getSocketSet() {
-		return socketSet;
-	}
 	
 	public SocketClient getSocket(){
 		return strategy.chooseServer(this);

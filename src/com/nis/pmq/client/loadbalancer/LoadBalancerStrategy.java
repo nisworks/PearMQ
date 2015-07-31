@@ -7,4 +7,6 @@ import com.nis.pmq.client.SocketClient;
 public interface LoadBalancerStrategy {
 
 	public SocketClient chooseServer(ServiceStatsData socketStatsData);
+	
+	public void registerSocket(SocketClient socket);
 }

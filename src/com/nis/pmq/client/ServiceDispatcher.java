@@ -17,11 +17,11 @@ public class ServiceDispatcher {
 	private Map<String, RequestThread> requestCallbacks = new ConcurrentHashMap<String, RequestThread>();
 
 	
-	public PmqRequest2 callService(String service, String request, long timeout) throws PmqServiceException{
+	public ClientRequest callService(String service, String request, long timeout) throws PmqServiceException{
 		ServiceStatsData connectorStrategy = services.get(service);
 		SocketClient serverConnector = connectorStrategy.getSocket();
 		String uuid = UUID.randomUUID().toString();
-		PmqRequest2 momRequest = new PmqRequest2(uuid, service, request);
+		ClientRequest momRequest = new ClientRequest(uuid, service, request);
 		final Thread currentThread = Thread.currentThread();
 		requestCallbacks.put(uuid, new RequestThread(currentThread, momRequest));
 		try {
@@ -69,11 +69,11 @@ public class ServiceDispatcher {
 	private class RequestThread{
 		
 		private Thread thread;
-		private PmqRequest2 request;
+		private ClientRequest request;
 		
 		
 		
-		public RequestThread(Thread thread, PmqRequest2 request) {
+		public RequestThread(Thread thread, ClientRequest request) {
 			super();
 			this.thread = thread;
 			this.request = request;
@@ -81,7 +81,7 @@ public class ServiceDispatcher {
 		public Thread getThread() {
 			return thread;
 		}
-		public PmqRequest2 getRequest() {
+		public ClientRequest getRequest() {
 			return request;
 		}
 		

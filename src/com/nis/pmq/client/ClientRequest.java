@@ -1,13 +1,13 @@
 package com.nis.pmq.client;
 
-public class PmqRequest2 {
+public class ClientRequest {
 
 	private String request;
 	private String uuid;
 	private String service;
 	private String response;
 	
-	public PmqRequest2(String uuid, String service, String request) {
+	public ClientRequest(String uuid, String service, String request) {
 		super();
 		this.uuid = uuid;
 		this.service = service;

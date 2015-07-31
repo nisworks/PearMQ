@@ -17,8 +17,9 @@ import org.json.simple.parser.ParseException;
 import com.nis.pmq.common.JsonUtil;
 import com.nis.pmq.common.PmqEnvelope;
 import com.nis.pmq.common.PmqParams;
+import com.nis.pmq.common.exception.PmqRuntimeException;
 import com.nis.pmq.common.exception.PmqSocketException;
-import com.nis.pmq.server.PmqRequest;
+import com.nis.pmq.server.ServiceRequest;
 import com.nis.pmq.server.SocketServer;
 
 public class SocketClient {
@@ -63,7 +64,7 @@ public class SocketClient {
 
 	}
 
-	public synchronized void callService(PmqRequest2 request, long timeout) throws PmqSocketException {
+	public synchronized void callService(ClientRequest request, long timeout) throws PmqSocketException {
 		PmqEnvelope envelope = new PmqEnvelope();
 		envelope.setService(request.getService());
 		envelope.setPayload(request.getRequest());
@@ -123,11 +124,9 @@ public class SocketClient {
 
 					}
 				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new PmqRuntimeException(e);
 				} catch (ParseException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					throw new PmqRuntimeException(e);
 				}
 			}
 		}).start();
