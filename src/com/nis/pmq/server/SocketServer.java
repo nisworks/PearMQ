@@ -81,15 +81,17 @@ public class SocketServer {
 			throw new PmqSocketException("Socket is closed");
 		}
 		if (!isClosed() && clientId.equals(request.getClientId())) {
-			try {
-				PmqEnvelope envelope = new PmqEnvelope();
-				envelope.setPayload(request.getResponse());
-				envelope.setTimestamp(new Date().toString());
-				envelope.setService(request.getService());
-				envelope.setUuid(request.getUuid());
+			PmqEnvelope envelope = new PmqEnvelope();
+			envelope.setPayload(request.getResponse());
+			envelope.setTimestamp(new Date().toString());
+			envelope.setService(request.getService());
+			envelope.setUuid(request.getUuid());
+			socketDispatcher.getPersister().persistAll(envelope);
+			try {								
 				output.writeUTF(JsonUtil.encode(envelope));
 				return;
 			} catch (IOException e) {
+				socketDispatcher.getPersister().persistError(envelope);
 				throw new PmqSocketException(e);
 			}
 		}

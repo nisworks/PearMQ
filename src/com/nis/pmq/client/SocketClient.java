@@ -72,9 +72,11 @@ public class SocketClient {
 		envelope.setUuid(request.getUuid());
 		envelope.setTimeout(timeout);
 		try {
+			serviceDispatcher.getPersister().persistAll(envelope);
 			System.out.println("client: "+JsonUtil.encode(envelope));
 			output.writeUTF(JsonUtil.encode(envelope));
 		} catch (IOException e) {
+			serviceDispatcher.getPersister().persistError(envelope);
 			throw new PmqSocketException(e);
 		}
 	}

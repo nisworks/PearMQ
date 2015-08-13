@@ -11,9 +11,11 @@ import java.util.Map;
 
 import org.json.simple.parser.ParseException;
 
+import com.nis.pmq.common.EmptyPersister;
 import com.nis.pmq.common.ErrorCode;
 import com.nis.pmq.common.JsonUtil;
 import com.nis.pmq.common.PmqParams;
+import com.nis.pmq.common.PmqPersister;
 import com.nis.pmq.common.exception.PmqRuntimeException;
 import com.nis.pmq.common.exception.PmqSocketException;
 
@@ -23,6 +25,7 @@ public class SocketDispatcher {
 	private SocketServer[] socketPool;
 	private HashMap<String, SocketServer> activeClients;
 	private PmqProcesorFactory procesorFactory;
+	private PmqPersister persister = new EmptyPersister();
 
 	public SocketDispatcher(int baseSocket, int socketPoolSize,
 			PmqProcesorFactory procesorFactory) {
@@ -108,7 +111,6 @@ public class SocketDispatcher {
 				try {
 					socket.writeResponse(request);
 				} catch (PmqSocketException e) {
-					disposeResponse(request);
 					socketPool[socket.getPortNumber() - socketOffset] = null;
 					e.printStackTrace();
 				}
@@ -118,7 +120,13 @@ public class SocketDispatcher {
 		new Thread(requestThread).start();
 	}
 
-	private void disposeResponse(ServiceRequest request) {
-
+	public PmqPersister getPersister() {
+		return persister;
 	}
+
+	public void setPersister(PmqPersister persister) {
+		this.persister = persister;
+	}
+	
+	
 }
