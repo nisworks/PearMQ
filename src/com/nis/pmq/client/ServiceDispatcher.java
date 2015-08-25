@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
-import com.nis.pmq.client.loadbalancer.ServiceStatsData;
+import com.nis.pmq.client.loadbalancer.LoadBalancerStrategy;
 import com.nis.pmq.common.EmptyPersister;
 import com.nis.pmq.common.PmqEnvelope;
 import com.nis.pmq.common.PmqParams;
@@ -15,31 +15,44 @@ import com.nis.pmq.common.exception.PmqSocketException;
 
 public class ServiceDispatcher {
 	
-	private Map<String, ServiceStatsData> services = new ConcurrentHashMap<String,  ServiceStatsData>();
+	private Map<String, ServiceMetadata> services = new ConcurrentHashMap<String,  ServiceMetadata>();
 	private Map<String, RequestThread> requestCallbacks = new ConcurrentHashMap<String, RequestThread>();
 	private PmqPersister persister = new EmptyPersister();
 
 	
 	public ClientRequest callService(String service, String request, long timeout) throws PmqServiceException{
-		ServiceStatsData connectorStrategy = services.get(service);
-		SocketClient serverConnector = connectorStrategy.getSocket();
-		String uuid = UUID.randomUUID().toString();
-		ClientRequest pmqRequest = new ClientRequest(uuid, service, request);
+
+		ClientRequest pmqRequest = new ClientRequest(service, request, timeout);
+		
+		return callService(pmqRequest);
+	}
+
+	public ClientRequest callService( ClientRequest pmqRequest)
+			throws PmqServiceException {
+		ServiceMetadata connectorStrategy = services.get(pmqRequest.getService());
+		SocketClient serverConnector = connectorStrategy.getSocket(pmqRequest);
+		
+		
 		final Thread currentThread = Thread.currentThread();
-		requestCallbacks.put(uuid, new RequestThread(currentThread, pmqRequest));
+		requestCallbacks.put(pmqRequest.getUuid(), new RequestThread(currentThread, pmqRequest));
 		
 		
 		try {
-			serverConnector.callService(pmqRequest, timeout);
+			serverConnector.callService(pmqRequest);
 		} catch (PmqSocketException e1) {
 			throw new PmqServiceException(e1);
 		}
 		try {
-			currentThread.sleep(timeout);
+			currentThread.sleep(pmqRequest.getTimeout());
 		} catch (InterruptedException e) {
 			return pmqRequest;
 		}
-		throw new PmqServiceException("Service timeout: "+service);
+		throw new PmqServiceException("Service timeout: "+pmqRequest.getService());
+	}
+	
+	public void setServiceStrategy(String service, LoadBalancerStrategy strategy){
+		ServiceMetadata connectorStrategy = services.get(service);
+		connectorStrategy.setStrategy(strategy);
 	}
 	
 	protected void processResponse(PmqEnvelope envelope){
@@ -61,9 +74,9 @@ public class ServiceDispatcher {
 	
 	protected synchronized void registerService(SocketClient socket, List<String> serviceList){
 		for(String s : serviceList){
-			 ServiceStatsData socketData = services.get(s);
+			 ServiceMetadata socketData = services.get(s);
 			if(socketData==null){
-				socketData = new ServiceStatsData(s);
+				socketData = new ServiceMetadata(s);
 				services.put(s, socketData);
 			}
 			

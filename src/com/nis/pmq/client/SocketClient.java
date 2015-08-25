@@ -64,13 +64,13 @@ public class SocketClient {
 
 	}
 
-	public synchronized void callService(ClientRequest request, long timeout) throws PmqSocketException {
+	public synchronized void callService(ClientRequest request) throws PmqSocketException {
 		PmqEnvelope envelope = new PmqEnvelope();
 		envelope.setService(request.getService());
 		envelope.setPayload(request.getRequest());
 		envelope.setTimestamp(new Date().toString());
 		envelope.setUuid(request.getUuid());
-		envelope.setTimeout(timeout);
+		envelope.setTimeout(request.getTimeout());
 		try {
 			serviceDispatcher.getPersister().persistAll(envelope);
 			System.out.println("client: "+JsonUtil.encode(envelope));
@@ -133,4 +133,35 @@ public class SocketClient {
 			}
 		}).start();
 	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result
+				+ ((hostName == null) ? 0 : hostName.hashCode());
+		result = prime * result + portNumber;
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		SocketClient other = (SocketClient) obj;
+		if (hostName == null) {
+			if (other.hostName != null)
+				return false;
+		} else if (!hostName.equals(other.hostName))
+			return false;
+		if (portNumber != other.portNumber)
+			return false;
+		return true;
+	}
+	
+	
 }
